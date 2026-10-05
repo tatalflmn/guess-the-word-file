@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+    <div id="app">
+
+        <div class="flex justify-center items-center h-screen bg-[url('https://i.pinimg.com/736x/08/3d/aa/083daa34196f819723c4c71e72004048.jpg')]
+        bg-center bg-cover">
+
+            <div class="flex flex-col justify-center items-center gap-5">
+
+                <h1 class="text-5xl font-bold font-serif text-rose-300 text-center mb-15">GUESS THE WORD</h1>
+
+                <h1 class="text-xl font-bold text-white">{{message}}</h1>
+
+                <div class="">
+                    <h1 class="text-7xl text-center text-white mb-5 font-bold">
+                        {{displayWord.join(' ')}}
+                    </h1>
+
+                    <!-- <div v-for="(answer, index) in displayWord" :key="index" class="border border-b-3 w-15 mt-15 mb-10">
+                        {{answer}}
+                    </div> -->
+                </div>
+
+
+                <div v-for="(row, rowIndex) in keyboard" :key="rowIndex" class="flex gap-3">
+                    <button v-for="letters in row" :key="letters" @click="press(letters)"
+                        :class="['h-15 w-15 rounded-lg  font-semibold text-2xl ',
+                        usedLetters.includes(letters) 
+                        ? 'bg-gray-400 cursor-not-allowed opacity-50'
+                        : 'bg-teal-200 cursor-pointer hover:bg-rose-200']">
+                        {{letters}}
+                    </button>
+                </div>
+
+                <button @click="restart"
+                    class="text-lg font-semibold px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-500 hover:text-black cursor-pointer ">
+                Next Word</button>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    keyboard: [
+                        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                        ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+                    ],
+
+                    displayWord: ['_', '_', '_', '_', '_'],
+                    words: ['TIGER', 'SPEED', 'COLOR', 'APPLE', 'MELON'],
+                    usedLetters: [],
+                    randomValue: '',
+                    message: '',
+                }
+            }, methods: {
+                randomWords() {
+                    let random = Math.floor(Math.random() * this.words.length);
+                    return this.words[random];
+                },
+
+                press(letters) {
+                    if (this.usedLetters.includes(letters)) return
+                    this.usedLetters.push(letters);
+
+                    for (let i = 0; i < this.randomValue.length; i++) {
+                        if (this.randomValue[i] === letters) {
+                            this.displayWord[i] = letters;
+                        }
+                    }
+                    this.isWinner();
+                },
+                isWinner() {
+                    if (this.displayWord.join('') === this.randomValue) {
+                        this.message = 'You guess the word!'
+                    }
+                },
+                restart() {
+                    this.randomValue = this.randomWords()
+                    this.displayWord = ['_', '_', '_', '_', '_'];
+                    this.usedLetters = [];
+                    this.message = '';
+                }
+            },
+            mounted() {
+                this.randomValue = this.randomWords();
+                
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
